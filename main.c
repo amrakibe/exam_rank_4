@@ -6,7 +6,7 @@
 /*   By: amrakibe <amrakibe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/13 06:12:00 by amrakibe          #+#    #+#             */
-/*   Updated: 2022/10/13 06:18:42 by amrakibe         ###   ########.fr       */
+/*   Updated: 2022/10/20 13:04:34 by amrakibe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int _cd(char **av, int i)
 	if (i != 2)
 		return (print_error("error: bad argument \n"));
 	if (chdir(av[1]))
-		return (print_error("error: cd: cannot change directory") && print_error(av[0]) && print_error("\n"));
+		return (print_error("error: cd: cannot change directory") && print_error(av[1]) && print_error("\n"));
 	return (1);
 }
 
@@ -42,10 +42,8 @@ int _execve(char **av, char **env, int i)
 
 	int r = 0;
 	pip = (av[i] && av[i][0] == '|');
-	
 	if (pip && pipe(p) == -1)
-		return (print_error("error: fatal1\n"));
-	
+		return (print_error("error: fatal\n"));
 	pid = fork();
 	if (pid == 0)
 	{
@@ -67,11 +65,13 @@ int _execve(char **av, char **env, int i)
 
 int main(int ac , char **av, char **env)
 {
-	int i,r;
+	int i;
+	int r;
+	(void)ac;
+
 	i = 0;
 	r = 0;
 	G_var = dup(0);
-	(void)ac;
 	
 	while(av[i] && av[++i])
 	{
@@ -80,6 +80,7 @@ int main(int ac , char **av, char **env)
 		while(
 			(av[i] && av[i][0] != '|' && av[i][0] != ';') ||
 			(av[i] && av[i][0] == '|' && av[i][1] != '\0') ||
+			(av[i] && av[i][0] == ';' && av[i][1] != '\0') ||
 			(av[i] && av[i][0] != ';' && av[i][1] != '\0'))
 		i++;
 		if(!strcmp(av[0] , "cd"))
